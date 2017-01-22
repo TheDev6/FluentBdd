@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentBdd", "FluentBdd\FluentBdd.csproj", "{B0B606F4-602C-4D4A-AB4F-1AC1325A3807}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "Examples\Examples.csproj", "{54234CE7-E4CA-4296-8D55-F1F0755D887D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B0B606F4-602C-4D4A-AB4F-1AC1325A3807}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0B606F4-602C-4D4A-AB4F-1AC1325A3807}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0B606F4-602C-4D4A-AB4F-1AC1325A3807}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0B606F4-602C-4D4A-AB4F-1AC1325A3807}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54234CE7-E4CA-4296-8D55-F1F0755D887D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54234CE7-E4CA-4296-8D55-F1F0755D887D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54234CE7-E4CA-4296-8D55-F1F0755D887D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54234CE7-E4CA-4296-8D55-F1F0755D887D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
