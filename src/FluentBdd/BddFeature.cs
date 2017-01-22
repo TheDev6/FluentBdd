@@ -4,12 +4,14 @@
 
     public class BddFeature
     {
-        public BddFeature(string name)
+        public BddFeature(string name, string storyText)
         {
             this.Name = name;
+            this.StoryText = storyText;
             this.BddScenarioResults = new List<BddScenarioResult>();
         }
         public string Name { get; private set; }
+        public string StoryText { get; private set; }
         public List<BddScenarioResult> BddScenarioResults { get; set; }
     }
 }

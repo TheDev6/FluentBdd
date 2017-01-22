@@ -7,7 +7,12 @@
     [TestClass]
     public class CalculatorTests
     {
-        private readonly BddFeature _feature = new BddFeature("My Calculator Feature");
+        private readonly BddFeature _feature = new BddFeature(
+            name: "My Calculator Feature",
+            storyText:
+            @"As a person that is bad at math
+              I can use an Add method to add two numbers
+              So that I can get the answer");
 
         [TestMethod]
         public void AddTwoNumbers()
