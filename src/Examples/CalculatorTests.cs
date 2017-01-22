@@ -25,8 +25,8 @@
 
             //able to for each here based on data, or theories/test case scenarios as needed
 
-            bs.Given("I am a calculator user.")
-                .When("I enter 2", logger => bs.Get<Calculator>(calcKey).EnterFirstNum(2))
+            bs.Given("I am a calculator user.");
+            bs.When("I enter 2", logger => bs.Get<Calculator>(calcKey).EnterFirstNum(2))
                 .And("I Enter 2", logger => bs.Get<Calculator>(calcKey).EnterSecondNum(2))
                 .And("I press Add", logger => bs.Set(resultKey, bs.Get<Calculator>(calcKey).Add()));
             bs.Then(stepText: $"the result is {expect}", stepRunner: logger =>
@@ -36,6 +36,7 @@
             });
 
             this._feature.BddScenarioResults.Add(bs.GetResult());
+            var textOutput = bs.GetTextResult();
         }
 
         [TestMethod]
@@ -61,6 +62,7 @@
                 });
 
             this._feature.BddScenarioResults.Add(bdd.GetResult());
+            var textOutput = bdd.GetTextResult();
         }
 
         [TestCleanup]

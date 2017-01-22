@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
 
     public class BddScenario
     {
@@ -65,11 +66,11 @@
                     sr.FailException = ex;
                     this._stepResults.Add(sr);
                     //throw ex;
+
                     //TODO: Decide if we should throw now, or later :/ or have that be an option in order to accurately capture the results
                     //The test frameworks already have a path for this, BUT there should be a choice to divert and handle results as data and maybe ship to a test results crud system.
                     //I'm not sure yet what would be better???
                     //Maybe the question can be framed as when to use the underlying test framework for assertion reporting, or just handle it as data ??
-                    //Can we do both.
                 }
             }
             else
@@ -92,6 +93,38 @@
         public BddScenarioResult GetResult()
         {
             return new BddScenarioResult(scenarioName: this.ScenarioName, stepResults: this._stepResults);
+        }
+
+        public string GetTextResult()
+        {
+            var sb = new StringBuilder();
+            var arrow = "->";
+
+            foreach (var sr in this._stepResults.OrderBy(s => s.StepOrder))
+            {
+                sb.Append(sr.StepText);
+                sb.Append(Environment.NewLine);
+
+                sb.Append(arrow);
+                var passFail = sr.IsPass ? "pass" : "fail";
+                sb.Append(passFail);
+                if (!sr.IsPass)
+                {
+                    sb.Append(Environment.NewLine);
+
+                    sb.Append($"{arrow}{sr.FailException?.Message ?? "failure exception was null. Please alert code author."}");
+                    if (sr.FailException?.InnerException != null)
+                    {
+                        sb.Append(Environment.NewLine);
+
+                        sb.Append(arrow);
+                        sb.Append(sr.FailException.InnerException?.Message);
+                    }
+                }
+                sb.Append(Environment.NewLine);
+            }
+
+            return sb.ToString();
         }
     }
 }
