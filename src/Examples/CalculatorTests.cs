@@ -54,7 +54,7 @@
                 .When($"I enter {firstNum}", logger => bdd.Get<Calculator>(calcKey).EnterFirstNum(firstNum))
                 .And($"I Enter {secondNum}", logger => bdd.Get<Calculator>(calcKey).EnterSecondNum(secondNum))
                 .And("I press Add", logger => bdd.Set(resultKey, bdd.Get<Calculator>(calcKey).Add()))
-                .Then("The result is 70", logger =>
+                .Then($"The result is {expected}", logger =>
                 {
                     logger("Hey this a useful message about this step.");
                     bdd.Get<int>(resultKey).Should().Be(expected);
