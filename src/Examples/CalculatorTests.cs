@@ -21,14 +21,14 @@
             var resultKey = "result";
             var expect = 4;
             var bs = new BddScenario(scenarioName: "Add two numbers");
-            bs.Set(calcKey, new Calculator()); 
+            bs.Set(calcKey, new Calculator());
 
             //able to for each here based on data, or theories/test case scenarios as needed
 
             bs.Given("I am a calculator user.");
             bs.When("I enter 2", logger => bs.Get<Calculator>(calcKey).EnterFirstNum(2))
                 .And("I enter 2", logger => bs.Get<Calculator>(calcKey).EnterSecondNum(2))
-                .And("I press Add", logger => bs.Set(resultKey, bs.Get<Calculator>(calcKey).Add()));
+                .When("I press Add", logger => bs.Set(resultKey, bs.Get<Calculator>(calcKey).Add()));
             bs.Then(stepText: $"the result is {expect}", stepRunner: logger =>
             {
                 logger("Hey this a useful message about this step.");
