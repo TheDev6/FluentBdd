@@ -12,6 +12,8 @@
         //If such a feature could be implemented it would answer the following questions. Of 'these' hand coded tests, which are orphans, and which have a matching binding from a data source (Gherkin feature file)?
         //Currently I'm working on a relational model of gherkin, but it would be arguably better to keep the original syntax and just parse it as data in order to compare to this kind of stuff.
 
+        //Should we validate step runs to enforce given before when before then ect?
+
         private readonly List<StepResult> _stepResults;
         private readonly Dictionary<string, object> _context;
         private readonly Action<string> _altLogger;
