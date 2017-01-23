@@ -15,6 +15,8 @@
         public List<string> Logs { get; private set; }
         public int StepOrder { get; private set; }
 
+        public TimeSpan StepTime { get; set; }
+
         public void Log(string logMessage)
         {
             this.Logs.Add(logMessage);

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Text;
 
@@ -60,7 +61,11 @@
                         sr.Log(logMessage);
                         this._altLogger?.Invoke(logMessage);
                     });
+                    var sw = new Stopwatch();
+                    sw.Start();
                     stepRunner?.Invoke(logger);
+                    sw.Stop();
+                    sr.StepTime = sw.Elapsed;
                     this._stepResults.Add(sr);
                 }
                 catch (Exception ex)
