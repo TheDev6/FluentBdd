@@ -7,7 +7,7 @@
     [TestClass]
     public class CalculatorTests
     {
-        private readonly BddFeature _feature = new BddFeature(
+        private readonly BddFeatureResult _featureResult = new BddFeatureResult(
             name: "My Calculator Feature",
             storyText:
             @"As a person that is bad at math
@@ -21,7 +21,7 @@
             var resultKey = "result";
             var expect = 4;
             var bs = new BddScenario(scenarioName: "Add two numbers");
-            bs.Set(calcKey, new Calculator());
+            bs.Set(calcKey, new Calculator()); 
 
             //able to for each here based on data, or theories/test case scenarios as needed
 
@@ -35,7 +35,7 @@
                 bs.Get<int>(resultKey).Should().Be(expect);
             });
 
-            this._feature.BddScenarioResults.Add(bs.GetResult());
+            this._featureResult.BddScenarioResults.Add(bs.GetResult());
             var textOutput = bs.GetTextResult();
         }
 
@@ -61,7 +61,7 @@
                 result.Should().Be(expect);
             });
 
-            this._feature.BddScenarioResults.Add(bs.GetResult());
+            this._featureResult.BddScenarioResults.Add(bs.GetResult());
             var textOutput = bs.GetTextResult();
         }
 
@@ -87,8 +87,38 @@
                     bdd.Get<int>(resultKey).Should().Be(expected);
                 });
 
-            this._feature.BddScenarioResults.Add(bdd.GetResult());
+            this._featureResult.BddScenarioResults.Add(bdd.GetResult());
             var textOutput = bdd.GetTextResult();
+        }
+
+        [TestMethod]
+        public void AddTwoNumbers_Variation()
+        {
+            var firstNum = 1;
+            var secNum = 1;
+            var expect = 2;
+            var result = default(int);
+            var sut = new Calculator();
+            var bs = new BddScenario(scenarioName: "Add two numbers");
+
+            bs.Given("I am a calculator user.");
+            bs.When($"I enter {firstNum}", logger => sut.EnterFirstNum(firstNum))
+                .And($"I enter {secNum}", logger =>
+                {
+                    logger("");
+                    sut.EnterSecondNum(secNum);
+                    logger("post action log log.");
+                    false.Should().Be(true);
+                })
+                .And("I call Add", logger => { result = sut.Add(); });
+            bs.Then(stepText: $"the result is {expect}", stepRunner: logger =>
+            {
+                logger("Hey this a useful message about this step.");
+                result.Should().Be(expect);
+            });
+
+            this._featureResult.BddScenarioResults.Add(bs.GetResult());
+            var textOutput = bs.GetTextResult();
         }
     }
 }

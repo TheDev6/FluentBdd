@@ -3,9 +3,9 @@
     using System;
     using System.Collections.Generic;
 
-    public class StepResult
+    public class BddStepResult
     {
-        public StepResult(string stepText, int stepOrder)
+        public BddStepResult(string stepText, int stepOrder)
         {
             this.StepText = stepText;
             this.StepOrder = stepOrder;

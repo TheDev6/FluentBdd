@@ -14,14 +14,14 @@
 
         //Should we validate step runs to enforce given before when before then ect?
 
-        private readonly List<StepResult> _stepResults;
+        private readonly List<BddStepResult> _stepResults;
         private readonly Dictionary<string, object> _context;
         private readonly Action<string> _altLogger;
 
         public BddScenario(string scenarioName, Action<string> altLogger = null)
         {
             this.ScenarioName = scenarioName;
-            this._stepResults = new List<StepResult>();
+            this._stepResults = new List<BddStepResult>();
             this._context = new Dictionary<string, object>();
             this._altLogger = altLogger;
         }
@@ -50,7 +50,7 @@
 
         private BddScenario RunStep(string stepText, Action<Action<string>> stepRunner = null)
         {
-            var sr = new StepResult(stepText: stepText, stepOrder: this._stepResults.Count + 1);
+            var sr = new BddStepResult(stepText: stepText, stepOrder: this._stepResults.Count + 1);
             if (this._stepResults.All(s => s.IsPass))
             {
                 try
@@ -77,7 +77,7 @@
             }
             else
             {
-                sr.FailException = new SkippedStepException();
+                sr.FailException = new BddSkippedStepException();
                 this._stepResults.Add(sr);
             }
             return this;
@@ -127,10 +127,11 @@
 
                 if (sr.Logs.Any())
                 {
-                    sb.Append("Logs:");
+                    sb.Append($"-{arrow}Logs:");
                     sb.Append(Environment.NewLine);
                     foreach (var l in sr.Logs)
                     {
+                        sb.Append($"-{arrow}");
                         sb.Append(l);
                         sb.Append(Environment.NewLine);
                     }

@@ -2,9 +2,9 @@
 {
     using System.Collections.Generic;
 
-    public class BddFeature
+    public class BddFeatureResult
     {
-        public BddFeature(string name, string storyText)
+        public BddFeatureResult(string name, string storyText)
         {
             this.Name = name;
             this.StoryText = storyText;
