@@ -28,22 +28,22 @@
 
         public BddScenario Given(string stepText, Action<Action<string>> stepRunner = null)
         {
-            return this.RunStep(stepText: stepText, stepRunner: stepRunner);
+            return this.RunStep(stepText: $"Given {stepText}", stepRunner: stepRunner);
         }
 
         public BddScenario And(string stepText, Action<Action<string>> stepRunner = null)
         {
-            return this.RunStep(stepText: stepText, stepRunner: stepRunner);
+            return this.RunStep(stepText: $"And {stepText}", stepRunner: stepRunner);
         }
 
         public BddScenario When(string stepText, Action<Action<string>> stepRunner = null)
         {
-            return this.RunStep(stepText: stepText, stepRunner: stepRunner);
+            return this.RunStep(stepText: $"When {stepText}", stepRunner: stepRunner);
         }
 
         public BddScenario Then(string stepText, Action<Action<string>> stepRunner = null)
         {
-            return this.RunStep(stepText: stepText, stepRunner: stepRunner);
+            return this.RunStep(stepText: $"Then {stepText}", stepRunner: stepRunner);
         }
 
         private BddScenario RunStep(string stepText, Action<Action<string>> stepRunner = null)
@@ -122,6 +122,17 @@
                     }
                 }
                 sb.Append(Environment.NewLine);
+
+                if (sr.Logs.Any())
+                {
+                    sb.Append("Logs:");
+                    sb.Append(Environment.NewLine);
+                    foreach (var l in sr.Logs)
+                    {
+                        sb.Append(l);
+                        sb.Append(Environment.NewLine);
+                    }
+                }
             }
 
             return sb.ToString();

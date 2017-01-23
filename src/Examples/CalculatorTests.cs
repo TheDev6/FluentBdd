@@ -27,12 +27,38 @@
 
             bs.Given("I am a calculator user.");
             bs.When("I enter 2", logger => bs.Get<Calculator>(calcKey).EnterFirstNum(2))
-                .And("I Enter 2", logger => bs.Get<Calculator>(calcKey).EnterSecondNum(2))
+                .And("I enter 2", logger => bs.Get<Calculator>(calcKey).EnterSecondNum(2))
                 .And("I press Add", logger => bs.Set(resultKey, bs.Get<Calculator>(calcKey).Add()));
             bs.Then(stepText: $"the result is {expect}", stepRunner: logger =>
             {
                 logger("Hey this a useful message about this step.");
                 bs.Get<int>(resultKey).Should().Be(expect);
+            });
+
+            this._feature.BddScenarioResults.Add(bs.GetResult());
+            var textOutput = bs.GetTextResult();
+        }
+
+        [TestMethod]
+        public void AddTwoNumbers_Alternative()
+        {
+            //We can ignore the private dictionary and just 'close over' whatever variables we need to use across steps/methods.
+
+            var firstNum = 1;
+            var secNum = 1;
+            var expect = 2;
+            var result = default(int);
+            var sut = new Calculator();
+            var bs = new BddScenario(scenarioName: "Add two numbers");
+
+            bs.Given("I am a calculator user.");
+            bs.When("I enter 2", logger => sut.EnterFirstNum(firstNum))
+                .And("I enter 2", logger => sut.EnterSecondNum(secNum))
+                .And("I call Add", logger => { result = sut.Add(); });
+            bs.Then(stepText: $"the result is {expect}", stepRunner: logger =>
+            {
+                logger("Hey this a useful message about this step.");
+                result.Should().Be(expect);
             });
 
             this._feature.BddScenarioResults.Add(bs.GetResult());
@@ -63,12 +89,6 @@
 
             this._feature.BddScenarioResults.Add(bdd.GetResult());
             var textOutput = bdd.GetTextResult();
-        }
-
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            //Emit the test results to a test result location. Or just let the test results bubble up.
         }
     }
 }
