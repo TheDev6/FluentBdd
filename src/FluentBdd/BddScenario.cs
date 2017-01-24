@@ -137,7 +137,7 @@
         public void EmitFailures()
         {
             var ex = this._stepResults.FirstOrDefault(s => !s.IsPass && !(s.FailException is BddSkippedStepException));
-            if (ex != null)
+            if (ex != null && ex.FailException != null)
             {
                 throw ex.FailException;
             }
