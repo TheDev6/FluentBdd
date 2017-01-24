@@ -8,26 +8,29 @@
 
     public class BddScenario
     {
-        //TODO:
-        //Would be really cool to be able to to treat the feature gherkin syntax as data so that we could run a method that helps solve the problem of externally updated specs.
-        //If such a feature could be implemented it would answer the following questions. Of 'these' hand coded tests, which are orphans, and which have a matching binding from a data source (Gherkin feature file)?
-        //Currently I'm working on a relational model of gherkin, but it would be arguably better to keep the original syntax and just parse it as data in order to compare to this kind of stuff.
-
-        //Should we validate step runs to enforce given before when before then ect?
-
         private readonly List<BddStepResult> _stepResults;
         private readonly Dictionary<string, object> _context;
         private readonly Action<string> _altLogger;
+        private readonly bool _supressErrorsUntilEmitFailures;
 
-        public BddScenario(string scenarioName, Action<string> altLogger = null)
+        public BddScenario(string scenarioName, Action<string> altLogger = null, bool suppressErrorsUntilEmitFailures = false)
         {
             this.ScenarioName = scenarioName;
             this._stepResults = new List<BddStepResult>();
             this._context = new Dictionary<string, object>();
             this._altLogger = altLogger;
+            this._supressErrorsUntilEmitFailures = suppressErrorsUntilEmitFailures;
         }
 
         public string ScenarioName { get; private set; }
+        public T Get<T>(string key)
+        {
+            return (T)this._context[key];
+        }
+        public void Set(string key, object data)
+        {
+            this._context[key] = data;
+        }
 
         public BddScenario Given(string stepText, Action<Action<string>> stepRunner = null)
         {
@@ -51,50 +54,38 @@
 
         private BddScenario RunStep(string stepText, Action<Action<string>> stepRunner = null)
         {
-            var sr = new BddStepResult(stepText: stepText, stepOrder: this._stepResults.Count + 1);
+            var stepResult = new BddStepResult(stepText: stepText, stepOrder: this._stepResults.Count + 1);
+            var sw = new Stopwatch();
+            sw.Start();
             if (this._stepResults.All(s => s.IsPass))
             {
                 try
                 {
-                    var logger = new Action<string>(logMessage =>
+                    stepRunner?.Invoke(logMessage =>
                     {
-                        sr.Log(logMessage);
+                        stepResult.Log(logMessage);
                         this._altLogger?.Invoke(logMessage);
                     });
-                    var sw = new Stopwatch();
-                    sw.Start();
-                    stepRunner?.Invoke(logger);
-                    sw.Stop();
-                    sr.StepTime = sw.Elapsed;
-                    this._stepResults.Add(sr);
                 }
                 catch (Exception ex)
                 {
-                    sr.FailException = ex;
-                    this._stepResults.Add(sr);
-                    //throw ex;
-
-                    //TODO: Decide if we should throw now, or later :/ or have that be an option in order to accurately capture the results
-                    //The test frameworks already have a path for this, BUT there should be a choice to divert and handle results as data and maybe ship to a test results crud system.
-                    //I'm not sure yet what would be better???
-                    //Maybe the question can be framed as when to use the underlying test framework for assertion reporting, or just handle it as data ??
+                    var message = $"{stepResult.StepText} {ex.Message}";
+                    stepResult.FailException = new Exception(message, ex);
+                    if (!this._supressErrorsUntilEmitFailures)
+                    {
+                        throw ex;
+                    }
                 }
             }
             else
             {
-                sr.FailException = new BddSkippedStepException();
-                this._stepResults.Add(sr);
+                stepResult.FailException = new BddSkippedStepException();
             }
-            return this;
-        }
+            sw.Stop();
+            stepResult.StepTime = sw.Elapsed;
+            this._stepResults.Add(stepResult);
 
-        public T Get<T>(string key)
-        {
-            return (T)this._context[key];
-        }
-        public void Set(string key, object data)
-        {
-            this._context[key] = data;
+            return this;
         }
 
         public BddScenarioResult GetResult()
@@ -109,21 +100,18 @@
 
             foreach (var sr in this._stepResults.OrderBy(s => s.StepOrder))
             {
-                sb.Append(sr.StepText);
+                sb.Append($"{sr.StepText} - {sr.StepTime}");
                 sb.Append(Environment.NewLine);
 
                 sb.Append(arrow);
-                var passFail = sr.IsPass ? "pass" : "fail";
-                sb.Append(passFail);
+                sb.Append(sr.IsPass ? "pass" : "fail");
                 if (!sr.IsPass)
                 {
                     sb.Append(Environment.NewLine);
-
                     sb.Append($"{arrow}{sr.FailException?.Message ?? "failure exception was null. Please alert code author."}");
                     if (sr.FailException?.InnerException != null)
                     {
                         sb.Append(Environment.NewLine);
-
                         sb.Append(arrow);
                         sb.Append(sr.FailException.InnerException?.Message);
                     }
@@ -144,6 +132,15 @@
             }
 
             return sb.ToString();
+        }
+
+        public void EmitFailures()
+        {
+            var ex = this._stepResults.FirstOrDefault(s => !s.IsPass && !(s.FailException is BddSkippedStepException));
+            if (ex != null)
+            {
+                throw ex.FailException;
+            }
         }
     }
 }

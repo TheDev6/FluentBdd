@@ -1,124 +1,63 @@
 ﻿namespace Examples
 {
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using FluentBdd;
+    using Xunit;
+    using Xunit.Abstractions;
 
-    [TestClass]
     public class CalculatorTests
     {
         private readonly BddFeatureResult _featureResult = new BddFeatureResult(
             name: "My Calculator Feature",
-            storyText:
-            @"As a person that is bad at math
+            storyText: @"As a person that is bad at math
               I can use an Add method to add two numbers
               So that I can get the answer");
 
-        [TestMethod]
-        public void AddTwoNumbers()
+        private readonly ITestOutputHelper _logger;
+
+        public CalculatorTests(ITestOutputHelper logger)
         {
-            var calcKey = "calc";
-            var resultKey = "result";
-            var expect = 4;
-            var bs = new BddScenario(scenarioName: "Add two numbers");
-            bs.Set(calcKey, new Calculator());
-
-            //able to for each here based on data, or theories/test case scenarios as needed
-
-            bs.Given("I am a calculator user.");
-            bs.When("I enter 2", logger => bs.Get<Calculator>(calcKey).EnterFirstNum(2))
-                .And("I enter 2", logger => bs.Get<Calculator>(calcKey).EnterSecondNum(2))
-                .When("I press Add", logger => bs.Set(resultKey, bs.Get<Calculator>(calcKey).Add()));
-            bs.Then(stepText: $"the result is {expect}", stepRunner: logger =>
-            {
-                logger("Hey this a useful message about this step.");
-                bs.Get<int>(resultKey).Should().Be(expect);
-            });
-
-            this._featureResult.BddScenarioResults.Add(bs.GetResult());
-            var textOutput = bs.GetTextResult();
+            this._logger = logger;
         }
 
-        [TestMethod]
-        public void AddTwoNumbers_Alternative()
+        [Trait("Category", "AddTwoNumbers")]
+        [Theory]
+        [InlineData(2, 2, 4)]
+        [InlineData(2, 3, 5)]
+        [InlineData(3, 2, 4)]//wrong on purpose to see fail result
+        [InlineData(2, 4, 6)]
+        public void AddTwoNumbers(int first, int second, int expected)
         {
-            //We can ignore the private dictionary and just 'close over' whatever variables we need to use across steps/methods.
-
-            var firstNum = 1;
-            var secNum = 1;
-            var expect = 2;
-            var result = default(int);
+            var resultKey = "resultKey";
             var sut = new Calculator();
-            var bs = new BddScenario(scenarioName: "Add two numbers");
 
-            bs.Given("I am a calculator user.");
-            bs.When("I enter 2", logger => sut.EnterFirstNum(firstNum))
-                .And("I enter 2", logger => sut.EnterSecondNum(secNum))
-                .And("I call Add", logger => { result = sut.Add(); });
-            bs.Then(stepText: $"the result is {expect}", stepRunner: logger =>
-            {
-                logger("Hey this a useful message about this step.");
-                result.Should().Be(expect);
-            });
+            var bds = new BddScenario(
+                scenarioName: "Add two numbers",
+                altLogger: this._logger.WriteLine,//log messages get added to the step result, but you can log to multiple outputs if needed.
+                suppressErrorsUntilEmitFailures: true);//If you need to manage your own test output, this can be useful.
 
-            this._featureResult.BddScenarioResults.Add(bs.GetResult());
-            var textOutput = bs.GetTextResult();
-        }
-
-        [TestMethod]
-        public void AddTwoNumbersFail()
-        {
-            var calcKey = "calc";
-            var resultKey = "result";
-            var firstNum = 2;
-            var secondNum = 2;
-            var expected = 5;//incorrect on purpose for error example
-
-            var bdd = new BddScenario(scenarioName: "Add two numbers");
-            bdd.Set(calcKey, new Calculator());
-
-            bdd.Given("I am a calculator user.")
-                .When($"I enter {firstNum}", logger => bdd.Get<Calculator>(calcKey).EnterFirstNum(firstNum))
-                .And($"I Enter {secondNum}", logger => bdd.Get<Calculator>(calcKey).EnterSecondNum(secondNum))
-                .And("I press Add", logger => bdd.Set(resultKey, bdd.Get<Calculator>(calcKey).Add()))
-                .Then($"The result is {expected}", logger =>
+            bds.Given("I am a calculator user")
+                .And("I am bad at math")
+                .When($"I enter the first number {first}", logger => sut.EnterFirstNum(first))
+                .And($"I enter the second number {second}", logger => sut.EnterSecondNum(second))
+                .And("I call the add method", logger =>
                 {
-                    logger("Hey this a useful message about this step.");
-                    bdd.Get<int>(resultKey).Should().Be(expected);
+                    logger("clicking the add method");
+                    var result = sut.Add();
+                    bds.Set(key: resultKey, data: result);
+                    logger("clicked the add method");
+                })
+                .Then($"the result should be {expected}", logger =>
+                {
+                    var result = bds.Get<int>(resultKey);
+                    result.Should().Be(
+                        expected: expected,
+                        because: $"adding two numbers should emit the correct result of {expected}");
                 });
 
-            this._featureResult.BddScenarioResults.Add(bdd.GetResult());
-            var textOutput = bdd.GetTextResult();
-        }
-
-        [TestMethod]
-        public void AddTwoNumbers_Variation()
-        {
-            var firstNum = 1;
-            var secNum = 1;
-            var expect = 2;
-            var result = default(int);
-            var sut = new Calculator();
-            var bs = new BddScenario(scenarioName: "Add two numbers");
-
-            bs.Given("I am a calculator user.");
-            bs.When($"I enter {firstNum}", logger => sut.EnterFirstNum(firstNum))
-                .And($"I enter {secNum}", logger =>
-                {
-                    logger("");
-                    sut.EnterSecondNum(secNum);
-                    logger("post action log log.");
-                    false.Should().Be(true);
-                })
-                .And("I call Add", logger => { result = sut.Add(); });
-            bs.Then(stepText: $"the result is {expect}", stepRunner: logger =>
-            {
-                logger("Hey this a useful message about this step.");
-                result.Should().Be(expect);
-            });
-
-            this._featureResult.BddScenarioResults.Add(bs.GetResult());
-            var textOutput = bs.GetTextResult();
+            this._featureResult.BddScenarioResults.Add(bds.GetResult());//test results as objects allows transfer to another destination if 
+            var textOutput = bds.GetTextResult();//could use this to log after the fact.
+            bds.EmitFailures();//when suppressErrorsUntilEmitFailure is true, this is how you let the assertions bubble up to the test framework
         }
     }
 }
