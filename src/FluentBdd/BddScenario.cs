@@ -6,7 +6,7 @@
     using System.Linq;
     using System.Text;
 
-    public class BddScenario
+    public class BddScenario : IBddContext
     {
         private readonly List<BddStepResult> _stepResults;
         private readonly Dictionary<string, object> _context;
@@ -27,32 +27,33 @@
         {
             return (T)this._context[key];
         }
+
         public void Set(string key, object data)
         {
             this._context[key] = data;
         }
 
-        public BddScenario Given(string stepText, Action<Action<string>> stepRunner = null)
+        public BddScenario Given(string stepText, Action<Action<string>, IBddContext> stepRunner = null)
         {
             return this.RunStep(stepText: $"Given {stepText}", stepRunner: stepRunner);
         }
 
-        public BddScenario And(string stepText, Action<Action<string>> stepRunner = null)
+        public BddScenario And(string stepText, Action<Action<string>, IBddContext> stepRunner = null)
         {
             return this.RunStep(stepText: $"And {stepText}", stepRunner: stepRunner);
         }
 
-        public BddScenario When(string stepText, Action<Action<string>> stepRunner = null)
+        public BddScenario When(string stepText, Action<Action<string>, IBddContext> stepRunner = null)
         {
             return this.RunStep(stepText: $"When {stepText}", stepRunner: stepRunner);
         }
 
-        public BddScenario Then(string stepText, Action<Action<string>> stepRunner = null)
+        public BddScenario Then(string stepText, Action<Action<string>, IBddContext> stepRunner = null)
         {
             return this.RunStep(stepText: $"Then {stepText}", stepRunner: stepRunner);
         }
 
-        private BddScenario RunStep(string stepText, Action<Action<string>> stepRunner = null)
+        private BddScenario RunStep(string stepText, Action<Action<string>, IBddContext> stepRunner = null)
         {
             var stepResult = new BddStepResult(stepText: stepText, stepOrder: this._stepResults.Count + 1);
             var sw = new Stopwatch();
@@ -65,7 +66,7 @@
                     {
                         stepResult.Log(logMessage);
                         this._altLogger?.Invoke(logMessage);
-                    });
+                    }, this);
                 }
                 catch (Exception ex)
                 {
