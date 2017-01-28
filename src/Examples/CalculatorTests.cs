@@ -22,7 +22,7 @@
         }
 
         [Trait("Category", "AddTwoNumbers")]
-        [Theory]
+        [Theory(DisplayName = "AddTwoNumbersVariation")]
         [InlineData(2, 2, 4)]
         [InlineData(2, 3, 5)]
         [InlineData(3, 2, 4)]//wrong on purpose to see fail result
@@ -34,7 +34,6 @@
 
             var bds = new BddScenario(
                 scenarioName: "Add two numbers",
-                altLogger: this._logger.WriteLine,//log messages get added to the step result, but you can log to multiple outputs if needed.
                 suppressErrorsUntilEmitFailures: true);//If you need to manage your own test output, this can be useful.
 
             bds.Given("I am a calculator user")
@@ -61,8 +60,7 @@
             bds.EmitFailures();//when suppressErrorsUntilEmitFailure is true, this is how you let the assertions bubble up to the test framework
         }
 
-        [Trait("Category", "AddTwoNumbersVariation")]
-        [Theory]
+        [Theory(DisplayName = "AddTwoNumbersVariation")]
         [InlineData(2, 2, 4)]
         [InlineData(2, 3, 5)]
         [InlineData(2, 4, 6)]
@@ -71,8 +69,6 @@
         {
             var bds = new BddScenario(
                 scenarioName: "Add two numbers",
-                //log messages get added to the step result, but you can log to multiple outputs if needed.
-                altLogger: this._logger.WriteLine,
                 suppressErrorsUntilEmitFailures: true);//was trying to show without this, but I like it!
 
             bds.Set("calc", new Calculator());//Subject Under Test

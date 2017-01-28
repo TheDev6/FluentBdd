@@ -10,15 +10,13 @@
     {
         private readonly List<BddStepResult> _stepResults;
         private readonly Dictionary<string, object> _context;
-        private readonly Action<string> _altLogger;
         private readonly bool _supressErrorsUntilEmitFailures;
 
-        public BddScenario(string scenarioName, Action<string> altLogger = null, bool suppressErrorsUntilEmitFailures = false)
+        public BddScenario(string scenarioName, bool suppressErrorsUntilEmitFailures = false)
         {
             this.ScenarioName = scenarioName;
             this._stepResults = new List<BddStepResult>();
             this._context = new Dictionary<string, object>();
-            this._altLogger = altLogger;
             this._supressErrorsUntilEmitFailures = suppressErrorsUntilEmitFailures;
         }
 
@@ -62,15 +60,11 @@
             {
                 try
                 {
-                    stepRunner?.Invoke(logMessage =>
-                    {
-                        stepResult.Log(logMessage);
-                        this._altLogger?.Invoke(logMessage);
-                    }, this);
+                    stepRunner?.Invoke(stepResult.Log, this);
                 }
                 catch (Exception ex)
                 {
-                    var message = $"{stepResult.StepText} {ex.Message}";
+                    var message = $"[{stepResult.StepText}]{Environment.NewLine}{ex.Message}";
                     stepResult.FailException = new Exception(message, ex);
                     if (!this._supressErrorsUntilEmitFailures)
                     {
@@ -138,7 +132,7 @@
         public void EmitFailures()
         {
             var ex = this._stepResults.FirstOrDefault(s => !s.IsPass && !(s.FailException is BddSkippedStepException));
-            if (ex != null && ex.FailException != null)
+            if (ex?.FailException != null)
             {
                 throw ex.FailException;
             }
