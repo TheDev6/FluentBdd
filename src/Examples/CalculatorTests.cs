@@ -1,6 +1,5 @@
 ﻿namespace Examples
 {
-    using System;
     using FluentAssertions;
     using FluentBdd;
     using Xunit;
@@ -8,6 +7,7 @@
 
     public class CalculatorTests
     {
+        //The structure exists to buble up to a feature result.
         private readonly BddFeatureResult _featureResult = new BddFeatureResult(
             name: "My Calculator Feature",
             storyText: @"As a person that is bad at math
@@ -21,7 +21,6 @@
             this._logger = logger;
         }
 
-        [Trait("Category", "AddTwoNumbers")]
         [Theory(DisplayName = "AddTwoNumbersVariation")]
         [InlineData(2, 2, 4)]
         [InlineData(2, 3, 5)]
@@ -42,10 +41,10 @@
                 .And($"I enter the second number {second}", (logger, context) => sut.EnterSecondNum(second))
                 .And("I call the add method", (logger, context) =>
                 {
-                    logger("clicking the add method");
+                    logger.Log("clicking the add method");
                     var result = sut.Add();
                     bds.Set(key: resultKey, data: result);
-                    logger("clicked the add method");
+                    logger.Log("clicked the add method");
                 })
                 .Then($"the result should be {expected}", (logger, context) =>
                 {
@@ -55,12 +54,12 @@
                         because: $"adding two numbers should emit the correct result of {expected}");
                 });
 
-            this._featureResult.BddScenarioResults.Add(bds.GetResult());//test results as objects allows transfer to another destination if 
-            var textOutput = bds.GetTextResult();//could use this to log after the fact.
+            this._logger.WriteLine(bds.GetTextResult());
+
             bds.EmitFailures();//when suppressErrorsUntilEmitFailure is true, this is how you let the assertions bubble up to the test framework
         }
 
-        [Theory(DisplayName = "AddTwoNumbersVariation")]
+        [Theory(DisplayName = "AddTwoNumbers_ExampleVariation")]
         [InlineData(2, 2, 4)]
         [InlineData(2, 3, 5)]
         [InlineData(2, 4, 6)]
@@ -87,24 +86,24 @@
             bds.EmitFailures();
         }
 
-        private void EnterFirstNumber(Action<string> logger, IBddContext bddContext)
+        private void EnterFirstNumber(IBddStepLogger logger, IBddContext bddContext)
         {
             bddContext.Get<Calculator>("calc").EnterFirstNum(bddContext.Get<int>("first"));
         }
 
-        private void EnterSecondNumber(Action<string> logger, IBddContext bddContext)
+        private void EnterSecondNumber(IBddStepLogger logger, IBddContext bddContext)
         {
             bddContext.Get<Calculator>("calc").EnterSecondNum(bddContext.Get<int>("second"));
         }
 
-        private void CallAdd(Action<string> logger, IBddContext bddContext)
+        private void CallAdd(IBddStepLogger logger, IBddContext bddContext)
         {
-            logger("Pressing Add now..");
+            logger.Log("Pressing Add now..");
             bddContext.Set("result", bddContext.Get<Calculator>("calc").Add());
-            logger("Add called.");
+            logger.Log("Add called.");
         }
 
-        private void TheResultShouldBeExpected(Action<string> logger, IBddContext bddContext)
+        private void TheResultShouldBeExpected(IBddStepLogger logger, IBddContext bddContext)
         {
             bddContext.Get<int>("result").Should().Be(bddContext.Get<int>("expect"));
         }

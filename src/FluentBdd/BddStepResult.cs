@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
 
-    public class BddStepResult
+    public class BddStepResult : IBddStepLogger
     {
         public BddStepResult(string stepText, int stepOrder)
         {

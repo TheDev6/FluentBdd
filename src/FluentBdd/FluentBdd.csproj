@@ -38,6 +38,7 @@
     <Compile Include="BddFeatureResult.cs" />
     <Compile Include="BddScenarioResult.cs" />
     <Compile Include="IBddContext.cs" />
+    <Compile Include="IBddStepLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BddSkippedStepException.cs" />
     <Compile Include="BddStepResult.cs" />

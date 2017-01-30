@@ -64,11 +64,13 @@
                 }
                 catch (Exception ex)
                 {
-                    var message = $"[{stepResult.StepText}]{Environment.NewLine}{ex.Message}";
-                    stepResult.FailException = new Exception(message, ex);
+                    stepResult.FailException = this._exceptionFormatter == null
+                        ? this._exceptionFormatter.Invoke(ex, stepResult)//custom
+                        : new Exception($"[{stepResult.StepText}]{Environment.NewLine}{ex.Message}", ex);//default
+
                     if (!this._supressErrorsUntilEmitFailures)
                     {
-                        throw ex;
+                        throw stepResult.FailException;
                     }
                 }
             }
@@ -95,7 +97,7 @@
 
             foreach (var sr in this._stepResults.OrderBy(s => s.StepOrder))
             {
-                sb.Append($"{sr.StepText}");
+                sb.Append($"{sr.StepText} - {sr.StepTime}");
                 sb.Append(Environment.NewLine);
 
                 sb.Append(arrow);
@@ -125,10 +127,6 @@
                     }
                 }
             }
-
-            TimeSpan ts = default(TimeSpan);
-            this._stepResults.ForEach(sr => ts += ts.Add(sr.StepTime));
-            sb.Append($"Scenario Time:{ts}");
 
             return sb.ToString();
         }
