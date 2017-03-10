@@ -68,7 +68,7 @@
                     stepResult.FailException = new Exception(message, ex);
                     if (!this._supressErrorsUntilEmitFailures)
                     {
-                        throw ex;
+                        throw;
                     }
                 }
             }
