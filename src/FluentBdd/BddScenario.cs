@@ -51,6 +51,10 @@
             return this.RunStep(stepText: $"Then {stepText}", stepRunner: stepRunner);
         }
 
+        public BddScenario But(string stepText, Action<IBddStepLogger, IBddContext> stepRunner = null)
+        {
+            return this.RunStep(stepText: $"But {stepText}", stepRunner: stepRunner);
+        }
         private BddScenario RunStep(string stepText, Action<IBddStepLogger, IBddContext> stepRunner = null)
         {
             var stepResult = new BddStepResult(stepText: stepText, stepOrder: this._stepResults.Count + 1);
@@ -64,8 +68,7 @@
                 }
                 catch (Exception ex)
                 {
-                    var message = $"[{stepResult.StepText}]{Environment.NewLine}{ex.Message}";
-                    stepResult.FailException = new Exception(message, ex);
+                    stepResult.FailException = ex;
                     if (!this._supressErrorsUntilEmitFailures)
                     {
                         throw;
@@ -111,6 +114,7 @@
                         sb.Append(sr.FailException.InnerException?.Message);
                     }
                 }
+
                 sb.Append(Environment.NewLine);
 
                 if (sr.Logs.Any())
@@ -127,9 +131,12 @@
             }
 
             TimeSpan ts = default(TimeSpan);
-            this._stepResults.ForEach(sr => ts += ts.Add(sr.StepTime));
+            foreach (var t in this._stepResults)
+            {
+                ts += t.StepTime;
+            }
+            sb.Append(Environment.NewLine);
             sb.Append($"Scenario Time:{ts}");
-
             return sb.ToString();
         }
 

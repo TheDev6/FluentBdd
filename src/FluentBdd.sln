@@ -7,6 +7,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentBdd", "FluentBdd\Flue
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "Examples\Examples.csproj", "{54234CE7-E4CA-4296-8D55-F1F0755D887D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "A - Library", "A - Library", "{30D70F94-34E8-4B02-863A-432C3FEF28A3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "E - Examples", "E - Examples", "{6F186D3B-1B65-44E7-8DCE-BA9B29E7AE69}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "T - Tests", "T - Tests", "{D0D70BC1-1D38-4001-87BD-581176DB46A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentBdd.UnitTests", "FluentBdd.UnitTests\FluentBdd.UnitTests.csproj", "{D515F993-2010-4444-B2B0-E9771B365CBC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,8 +29,17 @@ Global
 		{54234CE7-E4CA-4296-8D55-F1F0755D887D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54234CE7-E4CA-4296-8D55-F1F0755D887D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54234CE7-E4CA-4296-8D55-F1F0755D887D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D515F993-2010-4444-B2B0-E9771B365CBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D515F993-2010-4444-B2B0-E9771B365CBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D515F993-2010-4444-B2B0-E9771B365CBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D515F993-2010-4444-B2B0-E9771B365CBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B0B606F4-602C-4D4A-AB4F-1AC1325A3807} = {30D70F94-34E8-4B02-863A-432C3FEF28A3}
+		{54234CE7-E4CA-4296-8D55-F1F0755D887D} = {6F186D3B-1B65-44E7-8DCE-BA9B29E7AE69}
+		{D515F993-2010-4444-B2B0-E9771B365CBC} = {D0D70BC1-1D38-4001-87BD-581176DB46A6}
 	EndGlobalSection
 EndGlobal

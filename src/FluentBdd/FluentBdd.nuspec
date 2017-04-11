@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>FluentBdd</id>
+    <version>1.0.0</version>
+    <title>Fluent Behavior Driven Development</title>
+    <authors>TheDev6</authors>
+    <projectUrl>https://github.com/TheDev6/FluentBdd</projectUrl>
+    <iconUrl></iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description></description>
+    <summary>
+    </summary>
+    <language />
+    <tags>EntityFramework EfContextWrapper</tags>
+  </metadata>
+  <files>
+    <file src="bin\release\FluentBdd.dll" target="lib" />
+    <file src="bin\release\FluentBdd.pdb" target="lib" />
+  </files>
+</package>
