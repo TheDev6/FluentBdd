@@ -2,10 +2,8 @@
 {
     using System;
     using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Xunit;
 
-    [TestClass()]
     public class BddScenario_Tests
     {
         [Theory]
