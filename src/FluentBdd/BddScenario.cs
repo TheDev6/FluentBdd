@@ -91,6 +91,20 @@
             return new BddScenarioResult(scenarioName: this.ScenarioName, stepResults: this._stepResults);
         }
 
+        private List<Exception> FlattenException(Exception ex)
+        {
+            var result = new List<Exception>();
+            if (ex != null)
+            {
+                result.Add(ex);
+                if (ex.InnerException != null)
+                {
+                    result.AddRange(FlattenException(ex.InnerException));
+                }
+            }
+            return result;
+        }
+
         public string GetTextResult()
         {
             var sb = new StringBuilder();
@@ -105,13 +119,12 @@
                 sb.Append(sr.IsPass ? "pass" : "fail");
                 if (!sr.IsPass)
                 {
-                    sb.Append(Environment.NewLine);
-                    sb.Append($"{arrow}{sr.FailException?.Message ?? "failure exception was null. Please alert code author."}");
-                    if (sr.FailException?.InnerException != null)
+                    var dashes = "";
+                    foreach (var ex in this.FlattenException(sr.FailException))
                     {
                         sb.Append(Environment.NewLine);
-                        sb.Append(arrow);
-                        sb.Append(sr.FailException.InnerException?.Message);
+                        sb.Append($"{dashes}{arrow}{ex.Message}");
+                        dashes += "-";
                     }
                 }
 

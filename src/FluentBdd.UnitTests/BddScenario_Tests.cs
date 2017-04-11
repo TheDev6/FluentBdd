@@ -165,7 +165,7 @@
                 .Then("Something should happen", (logger, context) =>
                 {
                     logger.Log("sup a log");
-                    throw new Exception("boom", new Exception("inner exception"));
+                    throw new Exception("ex1", new Exception("ex2", new Exception("ex3", new Exception("ex4"))));
                 });
 
             var result = sut.GetTextResult();
@@ -182,7 +182,7 @@
                 .Then("Something should happen", (logger, context) =>
                 {
                     logger.Log("sup a log");
-                    throw new Exception("boom", new Exception("inner exception"));
+                    throw new Exception("ex1", new Exception("ex2", new Exception("ex3", new Exception("ex4"))));
                 })
                 .And("Something Else");
 
