@@ -10,7 +10,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Behavior Driven Developement (Gherkin) for automated tests</description>
     <language />
-    <tags>EntityFramework EfContextWrapper</tags>
+    <tags>BDD FluentBDD SpecDriven GherkinSpec TestAutomation</tags>
   </metadata>
   <files>
     <file src="bin\release\FluentBdd.dll" target="lib" />
