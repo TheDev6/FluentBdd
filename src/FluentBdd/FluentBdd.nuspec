@@ -6,7 +6,7 @@
     <title>Fluent Behavior Driven Development</title>
     <authors>TheDev6</authors>
     <projectUrl>https://github.com/TheDev6/FluentBdd</projectUrl>
-    <iconUrl></iconUrl>
+    <iconUrl>https://dev6.blob.core.windows.net/blog-images/db-wrapper.jpg</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Behavior Driven Developement (Gherkin) for automated tests</description>
     <language />
