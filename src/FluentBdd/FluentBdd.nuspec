@@ -8,9 +8,7 @@
     <projectUrl>https://github.com/TheDev6/FluentBdd</projectUrl>
     <iconUrl></iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description></description>
-    <summary>
-    </summary>
+    <description>Behavior Driven Developement (Gherkin) for automated tests</description>
     <language />
     <tags>EntityFramework EfContextWrapper</tags>
   </metadata>
