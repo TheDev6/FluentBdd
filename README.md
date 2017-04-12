@@ -1,4 +1,5 @@
 # FluentBdd
+[Nuget](https://www.nuget.org/packages/FluentBdd/)  
 
 
 ### FluentBdd can assist in expressing, emitting, and logging gherkin sytax from automated tests.
@@ -178,5 +179,7 @@ Then the result should be 4
 ->Expected value to be 4, but found 5.  
 
 Scenario Time:00:00:00.2575123
+
+###### The function driven style is inspired by jasmine and Karma javascript testing frameworks. It just seemed so obvious that Bdd perfectly fits with text + assertion function.
 
 ###### Please let me know if you find any mistakes or have questions or sugguestions. Thanks!
