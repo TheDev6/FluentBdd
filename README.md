@@ -11,41 +11,49 @@ This is example is inspired by [spec flow documentaion](http://specflow.org/gett
 
 ```csharp
 var bds = new BddScenario("Add two numbers")
-                .Given("I have entered 50 into the calculator")
-                .And("I have also entered 70 into the calculator")
-                .When("I press add")
-                .Then("the result should be 120 on the screen");
+              .Given("I have entered 50 into the calculator")
+              .And("I have also entered 70 into the calculator")
+              .When("I press add")
+              .Then("the result should be 120 on the screen");
 ```
 
 This of course won't do much because there is no actual testing or assertions happening but it pretty much defines the humble value of FluentBdd. It just servers to match up the business's words to some tests. The next example connects the actual steps.
 ```csharp
- var resultKey = "resultKey";
-            var sut = new Calculator();
+  [Theory(DisplayName = "AddTwoNumbersVariation")]
+  [InlineData(2, 2, 4)]
+  [InlineData(2, 3, 5)]
+  [InlineData(3, 2, 4)]//wrong on purpose to see fail result
+  [InlineData(2, 4, 6)]
+  public void AddTwoNumbers(int first, int second, int expected)
+  {
+      var resultKey = "resultKey";
+      var sut = new Calculator();
 
-            var bds = new BddScenario(
-                scenarioName: "Add two numbers",
-                suppressErrorsUntilEmitFailures: true);//If you need to manage your own test output, this can be useful.
+      var bds = new BddScenario(
+          scenarioName: "Add two numbers",
+          suppressErrorsUntilEmitFailures: true);//If you need to manage your own test output, this can be useful.
 
-            bds.Given("I am a calculator user")
-                .And("I am bad at math")
-                .When($"I enter the first number {first}", (logger, context) => sut.EnterFirstNum(first))
-                .And($"I enter the second number {second}", (logger, context) => sut.EnterSecondNum(second))
-                .And("I call the add method", (logger, context) =>
-                {
-                    logger.Log("clicking the add method");
-                    var result = sut.Add();
-                    bds.Set(key: resultKey, data: result);
-                    logger.Log("clicked the add method");
-                })
-                .Then($"the result should be {expected}", (logger, context) =>
-                {
-                    var result = bds.Get<int>(resultKey);
-                    result.Should().Be(
-                        expected: expected,
-                        because: $"adding two numbers should emit the correct result of {expected}");
-                });
+      bds.Given("I am a calculator user")
+          .And("I am bad at math")
+          .When($"I enter the first number {first}", (logger, context) => sut.EnterFirstNum(first))
+          .And($"I enter the second number {second}", (logger, context) => sut.EnterSecondNum(second))
+          .And("I call the add method", (logger, context) =>
+          {
+              logger.Log("clicking the add method");
+              var result = sut.Add();
+              bds.Set(key: resultKey, data: result);
+              logger.Log("clicked the add method");
+          })
+          .Then($"the result should be {expected}", (logger, context) =>
+          {
+              var result = bds.Get<int>(resultKey);
+              result.Should().Be(
+                  expected: expected,
+                  because: $"adding two numbers should emit the correct result of {expected}");
+          });
 
-            this._logger.WriteLine(bds.GetTextResult());
+      this._logger.WriteLine(bds.GetTextResult());
 
-            bds.EmitFailures();//when suppressErrorsUntilEmitFailure is true, this is how you let the assertions bubble up to the test framework
+      bds.EmitFailures();//when suppressErrorsUntilEmitFailure is true, this is how you let the assertions bubble up to the test framework
+}
 ```
