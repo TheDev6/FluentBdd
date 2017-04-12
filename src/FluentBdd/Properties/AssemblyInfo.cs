@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompany("TheDev6")]
 [assembly: AssemblyProduct("FluentBdd")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("English")]
+[assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
