@@ -17,43 +17,166 @@ var bds = new BddScenario("Add two numbers")
               .Then("the result should be 120 on the screen");
 ```
 
-This of course won't do much because there is no actual testing or assertions happening but it pretty much defines the humble value of FluentBdd. It just servers to match up the business's words to some tests. The next example connects the actual steps.
+This of course won't do much because there is no actual testing or assertions happening but it pretty much defines the humble value of FluentBdd. It just matches up the gherkin syntax to some tests. The next example connects the actual steps and is included in the examples project.
 ```csharp
-  [Theory(DisplayName = "AddTwoNumbersVariation")]
-  [InlineData(2, 2, 4)]
-  [InlineData(2, 3, 5)]
-  [InlineData(3, 2, 4)]//wrong on purpose to see fail result
-  [InlineData(2, 4, 6)]
-  public void AddTwoNumbers(int first, int second, int expected)
-  {
-      var resultKey = "resultKey";
-      var sut = new Calculator();
+namespace Examples
+{
+    using FluentAssertions;
+    using FluentBdd;
+    using Xunit;
+    using Xunit.Abstractions;
 
-      var bds = new BddScenario(
-          scenarioName: "Add two numbers",
-          suppressErrorsUntilEmitFailures: true);//If you need to manage your own test output, this can be useful.
+    public class CalculatorTests
+    {
+        //The structure exists to buble up to a feature result.
+        private readonly BddFeatureResult _featureResult = new BddFeatureResult(
+            name: "My Calculator Feature",
+            storyText: @"As a person that is bad at math
+              I can use an Add method to add two numbers
+              So that I can get the answer");
 
-      bds.Given("I am a calculator user")
-          .And("I am bad at math")
-          .When($"I enter the first number {first}", (logger, context) => sut.EnterFirstNum(first))
-          .And($"I enter the second number {second}", (logger, context) => sut.EnterSecondNum(second))
-          .And("I call the add method", (logger, context) =>
-          {
-              logger.Log("clicking the add method");
-              var result = sut.Add();
-              bds.Set(key: resultKey, data: result);
-              logger.Log("clicked the add method");
-          })
-          .Then($"the result should be {expected}", (logger, context) =>
-          {
-              var result = bds.Get<int>(resultKey);
-              result.Should().Be(
-                  expected: expected,
-                  because: $"adding two numbers should emit the correct result of {expected}");
-          });
+        private readonly ITestOutputHelper _logger;
 
-      this._logger.WriteLine(bds.GetTextResult());
+        public CalculatorTests(ITestOutputHelper logger)
+        {
+            this._logger = logger;
+        }
 
-      bds.EmitFailures();//when suppressErrorsUntilEmitFailure is true, this is how you let the assertions bubble up to the test framework
+        [Theory(DisplayName = "AddTwoNumbersVariation")]
+        [InlineData(2, 2, 4)]
+        [InlineData(2, 3, 5)]
+        [InlineData(3, 2, 4)]//wrong on purpose to see fail result
+        [InlineData(2, 4, 6)]
+        public void AddTwoNumbers(int first, int second, int expected)
+        {
+            var resultKey = "resultKey";
+            var sut = new Calculator();
+
+            var bds = new BddScenario(
+                scenarioName: "Add two numbers",
+                suppressErrorsUntilEmitFailures: true);//If you need to manage your own test output, this can be useful.
+
+            bds.Given("I am a calculator user")
+                .And("I am bad at math")
+                .When($"I enter the first number {first}", (logger, context) => sut.EnterFirstNum(first))
+                .And($"I enter the second number {second}", (logger, context) => sut.EnterSecondNum(second))
+                .And("I call the add method", (logger, context) =>
+                {
+                    logger.Log("clicking the add method");
+                    var result = sut.Add();
+                    bds.Set(key: resultKey, data: result);
+                    logger.Log("clicked the add method");
+                })
+                .Then($"the result should be {expected}", (logger, context) =>
+                {
+                    var result = bds.Get<int>(resultKey);
+                    result.Should().Be(
+                        expected: expected,
+                        because: $"adding two numbers should emit the correct result of {expected}");
+                });
+
+            this._logger.WriteLine(bds.GetTextResult());
+
+            bds.EmitFailures();//when suppressErrorsUntilEmitFailure is true, this is how you let the assertions bubble up to the test framework
+        }
+
+        [Theory(DisplayName = "AddTwoNumbers_ExampleVariation")]
+        [InlineData(2, 2, 4)]
+        [InlineData(2, 3, 5)]
+        [InlineData(2, 4, 6)]
+        [InlineData(3, 2, 4)] //wrong on purpose to see fail result
+        public void AddTwoNumbers_ExampleVariation(int first, int second, int expected)
+        {
+            var bds = new BddScenario(
+                scenarioName: "Add two numbers",
+                suppressErrorsUntilEmitFailures: true);//was trying to show without this, but I like it!
+
+            bds.Set("calc", new Calculator());//Subject Under Test
+            bds.Set("first", first);
+            bds.Set("second", second);
+            bds.Set("expect", expected);
+
+            bds.Given("I am a calculator user")
+                .And("I am bad at math")
+                .When($"I enter the first number {first}", this.EnterFirstNumber)
+                .And($"I enter the second number {second}", this.EnterSecondNumber)
+                .And("I call the add method", this.CallAdd)
+                .Then($"the result should be {expected}", this.TheResultShouldBeExpected);
+
+            this._logger.WriteLine(bds.GetTextResult());
+            bds.EmitFailures();
+        }
+
+        private void EnterFirstNumber(IBddStepLogger logger, IBddContext bddContext)
+        {
+            bddContext.Get<Calculator>("calc").EnterFirstNum(bddContext.Get<int>("first"));
+        }
+
+        private void EnterSecondNumber(IBddStepLogger logger, IBddContext bddContext)
+        {
+            bddContext.Get<Calculator>("calc").EnterSecondNum(bddContext.Get<int>("second"));
+        }
+
+        private void CallAdd(IBddStepLogger logger, IBddContext bddContext)
+        {
+            logger.Log("Pressing Add now..");
+            bddContext.Set("result", bddContext.Get<Calculator>("calc").Add());
+            logger.Log("Add called.");
+        }
+
+        private void TheResultShouldBeExpected(IBddStepLogger logger, IBddContext bddContext)
+        {
+            bddContext.Get<int>("result").Should().Be(bddContext.Get<int>("expect"));
+        }
+    }
 }
+
 ```
+
+##### Here is the output from a passing test:
+
+Given I am a calculator user  
+->pass  
+And I am bad at math  
+->pass  
+When I enter the first number 2  
+->pass  
+And I enter the second number 4  
+->pass  
+And I call the add method  
+->pass  
+-->Logs:  
+-->Pressing Add now..  
+-->Add called.  
+Then the result should be 6  
+->pass  
+
+Scenario Time:00:00:00.0000020
+
+##### Here is the output from a failing test
+
+Xunit.Sdk.XunitException
+Expected value to be 4, but found 5.
+   at FluentBdd.BddScenario.EmitFailures() in \GitHub\FluentBdd\src\FluentBdd\BddScenario.cs:line 163
+   at Examples.CalculatorTests.AddTwoNumbers_ExampleVariation(Int32 first, Int32 second, Int32 expected) in \GitHub\FluentBdd\src\Examples\CalculatorTests.cs:line 86
+
+Given I am a calculator user  
+->pass  
+And I am bad at math  
+->pass  
+When I enter the first number 3  
+->pass  
+And I enter the second number 2  
+->pass  
+And I call the add method  
+->pass  
+-->Logs:  
+-->Pressing Add now..  
+-->Add called.  
+Then the result should be 4  
+->fail  
+->Expected value to be 4, but found 5.  
+
+Scenario Time:00:00:00.2575123
+
+###### Please let me know if you find any mistakes or have questions or sugguestions. Thanks!
