@@ -135,7 +135,7 @@ namespace Examples
 ```
 
 ##### Here is the output from a passing test:
-
+```
 Given I am a calculator user  
 ->pass  
 And I am bad at math  
@@ -153,9 +153,9 @@ Then the result should be 6
 ->pass  
 
 Scenario Time:00:00:00.0000020
-
+```
 ##### Here is the output from a failing test
-
+```
 Xunit.Sdk.XunitException
 Expected value to be 4, but found 5.
    at FluentBdd.BddScenario.EmitFailures() in \GitHub\FluentBdd\src\FluentBdd\BddScenario.cs:line 163
@@ -179,7 +179,7 @@ Then the result should be 4
 ->Expected value to be 4, but found 5.  
 
 Scenario Time:00:00:00.2575123
-
+```
 ###### The function driven style is inspired by jasmine and Karma javascript testing frameworks. It just seemed so obvious that Bdd perfectly fits with text + assertion function.
 
 ###### Please let me know if you find any mistakes or have questions or sugguestions. Thanks!
