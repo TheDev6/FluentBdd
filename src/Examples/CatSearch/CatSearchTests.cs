@@ -1,5 +1,6 @@
 ﻿namespace Examples.CatSearch
 {
+    using System;
     using System.IO;
     using System.Linq;
     using System.Threading;
@@ -35,7 +36,7 @@
 
         [Theory(DisplayName = "Search google for cats")]
         [Trait(name: "Category", value: "mytag")]
-        [Xunit.InlineData("Brown Cats")]
+        [Xunit.InlineData("I can haz funny cats")]
         [Xunit.InlineData("Funny Cats")]
         public void Searchgoogleforcats(string searchTerm)
         {
@@ -92,21 +93,19 @@
 
         private IWebDriver CreateLocalChromeDriver()
         {
-            //TODO use chrome from path or build dynamic path
-            //TODO why can't we relative path to the chrome driver from packages???????
-            var chromeDriver = new ChromeDriver(ChromeDriverService.CreateDefaultService(@"J:\Documents\Projects\GitHub\FluentBdd\src\packages\Selenium.WebDriver.ChromeDriver.2.33.0\driver\win32"));
+            //TODO relative paths to packages is a pain, I can't believe package refs can't be resolved another way.
+            var chromeDriver = new ChromeDriver(ChromeDriverService.CreateDefaultService(this.BuildPathToDriver()));
             return chromeDriver;
         }
 
-        //private string BuildPathToDriver(string pathFromPackageToDriver)
-        //{
-        //    var assem = System.Reflection.Assembly.GetExecutingAssembly();
-        //    var fullPath = assem.Location;
-        //    fullPath = fullPath.Replace(fullPath.Split('\\').Last(), "");
-        //    var relativePathToPackages = "..\\..\\..\\packages\\";
-        //    var result = Path.GetFullPath(Path.Combine(path1: fullPath, path2: Path.Combine(path1: relativePathToPackages, path2: pathFromPackageToDriver)));
-        //    return result;
-        //}
+        private string BuildPathToDriver()
+        {
+            var assem = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+            var fullPath = assem.Replace(assem.Split('\\').Last(), "").Substring(6); //.Replace(@"file:\\","");
+            var relativePathToPackages = "..\\..\\packages\\";
+            var result = Path.GetFullPath(Path.Combine(path1: fullPath, path2: Path.Combine(path1: relativePathToPackages, path2: "Selenium.WebDriver.ChromeDriver.2.33.0\\driver\\win32")));
+            return result;
+        }
         #endregion
 
     }
