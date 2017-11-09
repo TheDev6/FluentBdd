@@ -51,6 +51,7 @@
                 .And("I laugh at them", this.AndIlaughatthem);
 
             this.Log(bds.GetTextResult());
+            this._featureResult.BddScenarioResults.Add(bds.GetResult());
 
             bds.EmitFailures();
         }
